@@ -1,0 +1,11 @@
+*.i??
+.idea
+.project
+.classpath
+.settings
+.tmp
+target
+eclipse-classes
+atlassian-ide-plugin.xml
+bin
+dependency-reduced-pom.xml
