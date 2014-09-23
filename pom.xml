@@ -56,12 +56,4 @@
 		</dependency>
 	</dependencies>
 
-
-	<repositories>
-		<repository>
-			<id>Camel Repository for Preemptive Camel Tag 2.14.0</id>
-			<url>https://repository.apache.org/content/repositories/orgapachecamel-1012</url>
-		</repository>
-	</repositories>
-
 </project>
