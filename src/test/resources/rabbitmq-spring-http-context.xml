@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns="http://www.springframework.org/schema/beans"
+	   xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+
+	<import resource="rabbitmq-config.xml"/>
+
+	<camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
+		<template id="httpTemplate"/>
+		<route startupOrder="1">
+			<from uri="jetty:http://localhost:9099/test"/>
+			<to uri="mock:result"/>
+		</route>
+
+		<route startupOrder="2">
+			<from uri="rabbitmq-spring://queueA?cachingConnectionFactory=#cachingConnectionFactory&amp;maxConcurrentConsumers=5&amp;concurrentConsumers=5"/>
+			<to uri="bean:testProcessors?method=sendToHttpEndpoint"/>
+		</route>
+
+		<route startupOrder="3">
+			<from uri="direct:start"/>
+			<to uri="rabbitmq-spring://queueA?producerTemplate=#rabbitTemplate"/>
+		</route>
+	</camelContext>
+
+	<bean id="testProcessors" class="com.workable.camel.component.TestProcessors">
+		<property name="producerTemplate" ref="httpTemplate"/>
+	</bean>
+</beans>
