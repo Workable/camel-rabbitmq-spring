@@ -7,12 +7,11 @@ import org.apache.camel.Processor;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.spring.CamelSpringTestSupport;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-public class RabbitMQSpringTestSupport extends CamelSpringTestSupport {
+public class RabbitMQSpringHttpIT extends CamelSpringTestSupport {
 
 	@EndpointInject(uri = "direct:start")
 	private ProducerTemplate template;
@@ -32,11 +31,11 @@ public class RabbitMQSpringTestSupport extends CamelSpringTestSupport {
 		});
 
 		assertMockEndpointsSatisfied();
-	}
 
+	}
 
 	@Override
 	protected AbstractApplicationContext createApplicationContext() {
-		return new ClassPathXmlApplicationContext("rabbitmq-spring-context.xml");
+		return new ClassPathXmlApplicationContext("rabbitmq-spring-http-context.xml");
 	}
 }
