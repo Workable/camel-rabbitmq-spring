@@ -1,7 +1,9 @@
 package com.workable.camel.component;
 
+import com.rabbitmq.client.LongString;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.apache.camel.ProducerTemplate;
 import org.apache.camel.component.direct.DirectConsumer;
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.core.Message;
@@ -9,7 +11,9 @@ import org.springframework.amqp.core.MessageListener;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -68,12 +72,44 @@ public class RabbitMQSpringConsumer extends DirectConsumer implements MessageLis
 		if(configuration.getPropertiesPrefix() != null){
 			for(String headerName : messageHeaders.keySet()){
 				if(headerName != null && headerName.startsWith(configuration.getPropertiesPrefix().toLowerCase())){
-					headers.put(headerName, messageHeaders.get(headerName));
+					// www.alihack.com This is an extreme hack and should be removed from code with more generic approach
+					if(headerName.equalsIgnoreCase("rabbit_failed_new_message_ids")){
+						List<LongString> list = (List)messageHeaders.get(headerName);
+						List<String> result = new ArrayList<>();
+						for(LongString item : list){
+							result.add(item.toString());
+						}
+						headers.put(headerName, result);
+					}else if(headerName.equalsIgnoreCase("rabbit_failed_update_message_ids")){
+						List<LongString> list = (List)messageHeaders.get(headerName);
+						List<String> result = new ArrayList<>();
+						for(LongString item : list){
+							result.add(item.toString());
+						}
+						headers.put(headerName, result);
+					}else {
+						headers.put(headerName, messageHeaders.get(headerName));
+					}
 				}
 			}
 		}
 		// Required message properties
 		headers.put(Exchange.BREADCRUMB_ID, messageHeaders.get(Exchange.BREADCRUMB_ID));
 		return headers;
+	}
+
+	/**
+	 * Transformation of LongString to string
+	 * @param messageHeaderObject
+	 * @return
+	 */
+	private Object transform(Object messageHeaderObject){
+		Object messageHeader = null;
+		if(messageHeaderObject instanceof LongString){
+			messageHeader = messageHeaderObject.toString();
+		} else {
+			messageHeader = messageHeaderObject;
+		}
+		return messageHeader;
 	}
 }
