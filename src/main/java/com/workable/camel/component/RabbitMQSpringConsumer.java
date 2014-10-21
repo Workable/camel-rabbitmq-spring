@@ -9,6 +9,7 @@ import org.springframework.amqp.core.MessageListener;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -41,12 +42,10 @@ public class RabbitMQSpringConsumer extends DirectConsumer implements MessageLis
 
 	@Override
 	public void onMessage(Message message) {
-		String breadcrumbId = null;
 		Exchange exchange = getEndpoint().createExchange();
 		try {
 			Map<String, Object> messageHeaders = message.getMessageProperties().getHeaders();
-			breadcrumbId = String.valueOf(messageHeaders.get(Exchange.BREADCRUMB_ID));
-			exchange.getIn().setHeader(Exchange.BREADCRUMB_ID, breadcrumbId);
+			exchange.getIn().setHeaders(populateExchangeHeaders(messageHeaders));
 			exchange.getIn().setBody(message.getBody());
 			getProcessor().process(exchange);
 		} catch (Exception e) {
@@ -57,5 +56,24 @@ public class RabbitMQSpringConsumer extends DirectConsumer implements MessageLis
 				getExceptionHandler().handleException("Error processing exchange", exchange, exchange.getException());
 			}
 		}
+	}
+
+	/**
+	 * Helper method to bootstrap Camel Exchange with message headers from AMQP Message
+	 * @param messageHeaders
+	 * @return
+	 */
+	protected Map<String, Object> populateExchangeHeaders(Map<String, Object> messageHeaders){
+		Map<String, Object> headers = new HashMap<>();
+		if(configuration.getPropertiesPrefix() != null){
+			for(String headerName : messageHeaders.keySet()){
+				if(headerName != null && headerName.startsWith(configuration.getPropertiesPrefix().toLowerCase())){
+					headers.put(headerName, messageHeaders.get(headerName));
+				}
+			}
+		}
+		// Required message properties
+		headers.put(Exchange.BREADCRUMB_ID, messageHeaders.get(Exchange.BREADCRUMB_ID));
+		return headers;
 	}
 }
