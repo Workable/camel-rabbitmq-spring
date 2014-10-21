@@ -11,6 +11,7 @@ public class RabbitMQSpringConfiguration {
 	private int concurrentConsumers;
 	private int maxConcurrentConsumers;
 	private Boolean autoStartup;
+	private String propertiesPrefix;
 
 	public CachingConnectionFactory getCachingConnectionFactory() {
 		return cachingConnectionFactory;
@@ -58,5 +59,13 @@ public class RabbitMQSpringConfiguration {
 
 	public void setMaxConcurrentConsumers(int maxConcurrentConsumers) {
 		this.maxConcurrentConsumers = maxConcurrentConsumers;
+	}
+
+	public String getPropertiesPrefix() {
+		return propertiesPrefix;
+	}
+
+	public void setPropertiesPrefix(String propertiesPrefix) {
+		this.propertiesPrefix = propertiesPrefix;
 	}
 }
