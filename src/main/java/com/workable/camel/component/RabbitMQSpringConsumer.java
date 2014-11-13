@@ -1,5 +1,8 @@
 package com.workable.camel.component;
 
+import com.google.common.base.Function;
+import com.google.common.base.Functions;
+import com.google.common.collect.Lists;
 import com.rabbitmq.client.LongString;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -72,20 +75,15 @@ public class RabbitMQSpringConsumer extends DirectConsumer implements MessageLis
 		if(configuration.getPropertiesPrefix() != null){
 			for(String headerName : messageHeaders.keySet()){
 				if(headerName != null && headerName.startsWith(configuration.getPropertiesPrefix().toLowerCase())){
-					// www.alihack.com This is an extreme hack and should be removed from code with more generic approach
-					if(headerName.equalsIgnoreCase("rabbit_failed_new_message_ids")){
-						List<LongString> list = (List)messageHeaders.get(headerName);
-						List<String> result = new ArrayList<>();
-						for(LongString item : list){
-							result.add(item.toString());
-						}
-						headers.put(headerName, result);
-					}else if(headerName.equalsIgnoreCase("rabbit_failed_update_message_ids")){
-						List<LongString> list = (List)messageHeaders.get(headerName);
-						List<String> result = new ArrayList<>();
-						for(LongString item : list){
-							result.add(item.toString());
-						}
+					if(messageHeaders.get(headerName) instanceof List){
+						Function<Object, Object> stringifyLongStringObjects = new Function<Object, Object>() {
+							@Override
+							public Object apply(Object input) {
+								return (input instanceof LongString)? input.toString() : input;
+							}
+						};
+						List<Object> list = (List)messageHeaders.get(headerName);
+						List<Object> result = Lists.transform(list, stringifyLongStringObjects);
 						headers.put(headerName, result);
 					}else {
 						headers.put(headerName, messageHeaders.get(headerName));
