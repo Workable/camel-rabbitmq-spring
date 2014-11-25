@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	   xmlns:rabbit="http://www.springframework.org/schema/rabbit"
-	   xmlns="http://www.springframework.org/schema/beans"
-	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
             http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit-1.3.xsd">
 
 
-	<bean id="cachingConnectionFactory" class="org.springframework.amqp.rabbit.connection.CachingConnectionFactory">
-		<constructor-arg value="localhost"/>
-		<constructor-arg value="5672"/>
-		<property name="username" value="guest"/>
-		<property name="password" value="guest"/>
-		<property name="virtualHost" value="/"/>
-	</bean>
+    <bean id="cachingConnectionFactory" class="org.springframework.amqp.rabbit.connection.CachingConnectionFactory">
+        <constructor-arg value="localhost"/>
+        <constructor-arg value="5672"/>
+        <property name="username" value="guest"/>
+        <property name="password" value="guest"/>
+        <property name="virtualHost" value="/"/>
+    </bean>
 
-	<bean id="rabbitTemplate" class="org.springframework.amqp.rabbit.core.RabbitTemplate">
-		<property name="connectionFactory" ref="cachingConnectionFactory"/>
-	</bean>
+    <bean id="rabbitTemplate" class="org.springframework.amqp.rabbit.core.RabbitTemplate">
+        <property name="connectionFactory" ref="cachingConnectionFactory"/>
+    </bean>
 
-	<rabbit:admin connection-factory="cachingConnectionFactory"/>
-	<rabbit:queue name="queueA"/>
+    <rabbit:admin connection-factory="cachingConnectionFactory"/>
+    <rabbit:queue name="queueA"/>
 
 
 </beans>
