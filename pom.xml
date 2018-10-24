@@ -12,7 +12,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <spring-rabbit.version>1.3.5.RELEASE</spring-rabbit.version>
-        <camel.version>2.16.5</camel.version>
+        <camel.version>2.17.7</camel.version>
         <slf4j.version>1.7.7</slf4j.version>
         <javax.inject.version>1</javax.inject.version>
         <guava.version>18.0</guava.version>
